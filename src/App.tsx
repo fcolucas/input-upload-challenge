@@ -15,17 +15,21 @@ function App() {
 
   useEffect(() => {
     setTimeout(() => {
-      setFiles((prev) =>
-        prev.map((file) => {
-          if (file.progress < 100) {
-            return {
-              ...file,
-              progress: file.progress + 10,
-            };
-          }
-          return file;
-        })
-      );
+      const isCompleted = files.every((file) => file.progress === 100);
+
+      if (!isCompleted) {
+        setFiles((prev) =>
+          prev.map((file) => {
+            if (file.progress < 100) {
+              return {
+                ...file,
+                progress: file.progress + 10,
+              };
+            }
+            return file;
+          })
+        );
+      }
     }, 1000);
   }, [files]);
 
@@ -43,13 +47,17 @@ function App() {
     }
   };
 
+  const handleDelete = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="max-w-[27.5rem] mx-auto h-full flex justify-center items-center flex-col gap-5 py-36">
       <UploadInput onUpload={handleUploadFiles} />
 
       <div className="flex w-full flex-col gap-3">
-        {files.map((file) => (
-          <File key={file.id} item={file} />
+        {files.map((file, index) => (
+          <File key={index} item={file} onDelete={() => handleDelete(index)} />
         ))}
       </div>
     </div>
